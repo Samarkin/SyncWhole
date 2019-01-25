@@ -7,7 +7,7 @@ NOTE: Requires Outlook application to be installed.
 
 Refer to [this page](https://developers.google.com/calendar/quickstart/dotnet) to create a new project in your own Google account and download `credentials.json`.
 
-Move it to the project root directory and rename to `Google.credentials.json`.
+Move it to the `Google` folder under the project root.
 
 Use Visual Studio 2017 to open and build the solution.
 
