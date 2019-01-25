@@ -52,3 +52,5 @@ _ReSharper*/
 *-Results.xml
 lib/
 vs2017path.txt
+
+Google.credentials.json

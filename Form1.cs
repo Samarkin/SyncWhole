@@ -1,9 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Calendar.v3;
+using Google.Apis.Calendar.v3.Data;
+using Google.Apis.Services;
+using Google.Apis.Util.Store;
 using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace SyncWhole
@@ -21,7 +28,8 @@ namespace SyncWhole
 			try
 			{
 				listBox1.Items.Clear();
-				await Task.Run(() => LoadAppointments(vm => BeginInvoke((Action)(() => listBox1.Items.Add(vm)))));
+				Action<Action<IAppointmentViewModel>> loader = LoadGoogleAppointments;
+				await Task.Run(() => loader(vm => BeginInvoke((Action)(() => listBox1.Items.Add(vm)))));
 			}
 			finally
 			{
@@ -29,23 +37,105 @@ namespace SyncWhole
 			}
 		}
 
-		private static void LoadAppointments(Action<AppointmentViewModel> callback)
+		private static void LoadGoogleAppointments(Action<IAppointmentViewModel> callback)
+		{
+			// If modifying these scopes, delete your previously saved credentials
+			// at ~/.credentials/calendar-dotnet-quickstart.json
+			string[] scopes = { CalendarService.Scope.Calendar };
+			const string applicationName = nameof(SyncWhole);
+			UserCredential credential;
+
+			using (var stream = Assembly.GetExecutingAssembly()
+				.GetManifestResourceStream($"{nameof(SyncWhole)}.Google.credentials.json"))
+			{
+				// The file token.json stores the user's access and refresh tokens, and is created
+				// automatically when the authorization flow completes for the first time
+				string credPath = "token.json";
+				credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+					GoogleClientSecrets.Load(stream).Secrets,
+					scopes,
+					"user",
+					CancellationToken.None,
+					new FileDataStore(credPath, true)).Result;
+				Console.WriteLine("Credential file saved to: " + credPath);
+			}
+
+			// Create Google Calendar API service
+			var service = new CalendarService(new BaseClientService.Initializer()
+			{
+				HttpClientInitializer = credential,
+				ApplicationName = applicationName,
+			});
+
+			// Define parameters of request
+			EventsResource.ListRequest request = service.Events.List("primary");
+			request.ShowDeleted = false;
+
+			// List events
+			Events events = request.Execute();
+			foreach (var ev in events.Items)
+			{
+				callback(new GoogleAppointmentViewModel(ev));
+			}
+		}
+
+		private static void LoadOutlookAppointments(Action<IAppointmentViewModel> callback)
 		{
 			var app = new Outlook.Application();
 			var calendar = app.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar);
 
 			foreach (Outlook.AppointmentItem item in calendar.Items)
 			{
-				callback(new AppointmentViewModel(item));
+				callback(new OutlookAppointmentViewModel(item));
+			}
+		}
+
+		private interface IAppointmentViewModel
+		{
+			string ToLongString();
+		}
+
+		private class GoogleAppointmentViewModel : IAppointmentViewModel
+		{
+			private readonly Event _event;
+
+			public GoogleAppointmentViewModel(Event @event)
+			{
+				_event = @event;
+			}
+
+			public override string ToString()
+			{
+				return _event.Summary;
+			}
+
+			public string ToLongString()
+			{
+				StringBuilder sb = new StringBuilder();
+				sb.AppendLine(_event.Summary);
+				sb.AppendLine(_event.Location);
+				sb.AppendLine($"{_event.Start.DateTime} - {_event.End.DateTime}");
+				sb.AppendLine();
+
+				if (_event.Recurrence != null)
+				{
+					sb.AppendLine("Recurrence:");
+					foreach (var rule in _event.Recurrence)
+					{
+						sb.AppendLine(rule);
+					}
+				}
+
+				return sb.ToString();
 			}
 		}
 
 
-		private class AppointmentViewModel
+		private class OutlookAppointmentViewModel : IAppointmentViewModel
 		{
 			private readonly Outlook.AppointmentItem _appointment;
 
-			public AppointmentViewModel(Outlook.AppointmentItem appointment)
+			public OutlookAppointmentViewModel(Outlook.AppointmentItem appointment)
 			{
 				_appointment = appointment;
 			}
@@ -140,6 +230,7 @@ namespace SyncWhole
 
 				sb.AppendLine();
 				sb.AppendLine(_appointment.GlobalAppointmentID);
+				sb.AppendLine($"{_appointment.LastModificationTime}");
 
 				return sb.ToString();
 			}
@@ -147,7 +238,7 @@ namespace SyncWhole
 
 		private void ListBoxSelectionChanged(object sender, EventArgs e)
 		{
-			var apt = listBox1.SelectedItem as AppointmentViewModel;
+			var apt = listBox1.SelectedItem as IAppointmentViewModel;
 			if (apt == null)
 			{
 				return;
