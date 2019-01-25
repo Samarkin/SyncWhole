@@ -10,3 +10,7 @@ Refer to [this page](https://developers.google.com/calendar/quickstart/dotnet) t
 Move it to the project root directory and rename to `Google.credentials.json`.
 
 Use Visual Studio 2017 to open and build the solution.
+
+## License
+
+[MIT License](LICENSE)
