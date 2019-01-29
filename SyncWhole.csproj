@@ -45,12 +45,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppointmentExtensions.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Google\GoogleCalendarAppointment.cs" />
+    <Compile Include="Google\GoogleCalendarAdapter.cs" />
+    <Compile Include="Google\GoogleCalendarAdapterFactory.cs" />
+    <Compile Include="Common\IAppointment.cs" />
+    <Compile Include="Common\IAppointmentDestination.cs" />
+    <Compile Include="Common\IAppointmentDestinationFactory.cs" />
+    <Compile Include="Common\IAppointmentSource.cs" />
+    <Compile Include="Common\IAppointmentSourceFactory.cs" />
+    <Compile Include="Common\ILoadedAppointment.cs" />
+    <Compile Include="Outlook\OutlookAdapter.cs" />
+    <Compile Include="Outlook\OutlookAdapterFactory.cs" />
+    <Compile Include="Outlook\OutlookAppointment.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -109,12 +122,13 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AsyncEnumerator">
+      <Version>2.2.1</Version>
+    </PackageReference>
     <PackageReference Include="Google.Apis.Calendar.v3">
       <Version>1.37.0.1475</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Outlook\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

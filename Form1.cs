@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections.Async;
 using System.Windows.Forms;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Calendar.v3;
-using Google.Apis.Calendar.v3.Data;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
-using Outlook = Microsoft.Office.Interop.Outlook;
+using SyncWhole.Common;
+using SyncWhole.Outlook;
 
 namespace SyncWhole
 {
@@ -28,8 +19,12 @@ namespace SyncWhole
 			try
 			{
 				listBox1.Items.Clear();
-				Action<Action<IAppointmentViewModel>> loader = LoadGoogleAppointments;
-				await Task.Run(() => loader(vm => BeginInvoke((Action)(() => listBox1.Items.Add(vm)))));
+				IAppointmentSourceFactory factory = new OutlookAdapterFactory(); //new GoogleCalendarAdapterFactory("token.json");
+				using (IAppointmentSource source = await factory.ConnectSourceAsync())
+				{
+					await source.LoadAllAppointments()
+						.ForEachAsync(a => BeginInvoke((Action) (() => listBox1.Items.Add(a))));
+				}
 			}
 			finally
 			{
@@ -37,64 +32,7 @@ namespace SyncWhole
 			}
 		}
 
-		private static void LoadGoogleAppointments(Action<IAppointmentViewModel> callback)
-		{
-			// If modifying these scopes, delete your previously saved credentials
-			// at ~/.credentials/calendar-dotnet-quickstart.json
-			string[] scopes = { CalendarService.Scope.Calendar };
-			const string applicationName = nameof(SyncWhole);
-			UserCredential credential;
-
-			using (var stream = Assembly.GetExecutingAssembly()
-				.GetManifestResourceStream($"{nameof(SyncWhole)}.Google.credentials.json"))
-			{
-				// The file token.json stores the user's access and refresh tokens, and is created
-				// automatically when the authorization flow completes for the first time
-				string credPath = "token.json";
-				credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-					GoogleClientSecrets.Load(stream).Secrets,
-					scopes,
-					"user",
-					CancellationToken.None,
-					new FileDataStore(credPath, true)).Result;
-				Console.WriteLine("Credential file saved to: " + credPath);
-			}
-
-			// Create Google Calendar API service
-			var service = new CalendarService(new BaseClientService.Initializer()
-			{
-				HttpClientInitializer = credential,
-				ApplicationName = applicationName,
-			});
-
-			// Define parameters of request
-			EventsResource.ListRequest request = service.Events.List("primary");
-			request.ShowDeleted = false;
-
-			// List events
-			Events events = request.Execute();
-			foreach (var ev in events.Items)
-			{
-				callback(new GoogleAppointmentViewModel(ev));
-			}
-		}
-
-		private static void LoadOutlookAppointments(Action<IAppointmentViewModel> callback)
-		{
-			var app = new Outlook.Application();
-			var calendar = app.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar);
-
-			foreach (Outlook.AppointmentItem item in calendar.Items)
-			{
-				callback(new OutlookAppointmentViewModel(item));
-			}
-		}
-
-		private interface IAppointmentViewModel
-		{
-			string ToLongString();
-		}
-
+		/*
 		private class GoogleAppointmentViewModel : IAppointmentViewModel
 		{
 			private readonly Event _event;
@@ -125,6 +63,9 @@ namespace SyncWhole
 						sb.AppendLine(rule);
 					}
 				}
+
+				sb.AppendLine();
+				sb.AppendLine($"{_event.Updated}");
 
 				return sb.ToString();
 			}
@@ -235,10 +176,11 @@ namespace SyncWhole
 				return sb.ToString();
 			}
 		}
+		*/
 
 		private void ListBoxSelectionChanged(object sender, EventArgs e)
 		{
-			var apt = listBox1.SelectedItem as IAppointmentViewModel;
+			var apt = listBox1.SelectedItem as ILoadedAppointment;
 			if (apt == null)
 			{
 				return;
