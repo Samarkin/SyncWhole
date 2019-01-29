@@ -9,7 +9,7 @@ namespace SyncWhole.Common
 		IAsyncEnumerable<ILoadedAppointment> LoadAllAppointments();
 
 		Task<ILoadedAppointment> FindAppointmentAsync(string uniqueId);
-		Task<ILoadedAppointment> CreteAppointmentAsync(IAppointment appointment);
+		Task<ILoadedAppointment> CreateAppointmentAsync(string uniqueId, IAppointment appointment);
 		Task<ILoadedAppointment> UpdateAppointmentAsync(string uniqueId, IAppointment appointment);
 		Task DeleteAppointmentAsync(ILoadedAppointment appointment);
 	}

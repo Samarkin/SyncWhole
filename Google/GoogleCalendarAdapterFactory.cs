@@ -56,5 +56,7 @@ namespace SyncWhole.Google
 
 			return new GoogleCalendarAdapter(service);
 		}
+
+		public override string ToString() => $"Google Calendar ({_credentialId})";
 	}
 }

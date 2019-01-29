@@ -2,15 +2,25 @@
 using System.Collections.Async;
 using System.Windows.Forms;
 using SyncWhole.Common;
+using SyncWhole.Google;
 using SyncWhole.Outlook;
 
 namespace SyncWhole
 {
 	public partial class Form1 : Form
 	{
+		private readonly CalendarSynchronizer _synchronizer;
+
 		public Form1()
 		{
 			InitializeComponent();
+
+			var googleFactory = new GoogleCalendarAdapterFactory("token.json");
+			var outlookFactory = new OutlookAdapterFactory();
+			_synchronizer = new CalendarSynchronizer(outlookFactory, googleFactory);
+
+			_cmbCalendars.Items.Add(googleFactory);
+			_cmbCalendars.Items.Add(outlookFactory);
 		}
 
 		private async void ButtonClick(object sender, EventArgs e)
@@ -19,7 +29,10 @@ namespace SyncWhole
 			try
 			{
 				listBox1.Items.Clear();
-				IAppointmentSourceFactory factory = new OutlookAdapterFactory(); //new GoogleCalendarAdapterFactory("token.json");
+				if (!(_cmbCalendars.SelectedItem is IAppointmentSourceFactory factory))
+				{
+					return;
+				}
 				using (IAppointmentSource source = await factory.ConnectSourceAsync())
 				{
 					await source.LoadAllAppointments()
@@ -29,6 +42,38 @@ namespace SyncWhole
 			finally
 			{
 				_btnLoad.Enabled = true;
+			}
+		}
+
+		private async void SyncClick(object sender, EventArgs e)
+		{
+			_btnSync.Enabled = false;
+			try
+			{
+				await _synchronizer.Synchronize();
+			}
+			finally
+			{
+				_btnSync.Enabled = true;
+			}
+		}
+
+		private async void ClearClick(object sender, EventArgs e)
+		{
+			_btnClear.Enabled = false;
+			try
+			{
+				if (MessageBox.Show(this,
+					$"This will delete all appointments from the destination calendar ({_synchronizer.DestinationName}).{Environment.NewLine}Are you sure you want to continue?",
+					"Destructive operation", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
+					MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+				{
+					await _synchronizer.ClearDestination();
+				}
+			}
+			finally
+			{
+				_btnClear.Enabled = true;
 			}
 		}
 

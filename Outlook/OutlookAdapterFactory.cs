@@ -12,5 +12,7 @@ namespace SyncWhole.Outlook
 			var calendar = app.Session.GetDefaultFolder(OlDefaultFolders.olFolderCalendar);
 			return Task.FromResult<IAppointmentSource>(new OutlookAdapter(calendar));
 		}
+
+		public override string ToString() => "Outlook Application";
 	}
 }

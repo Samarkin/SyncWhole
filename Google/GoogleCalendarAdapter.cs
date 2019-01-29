@@ -1,4 +1,7 @@
-﻿using System.Collections.Async;
+﻿using System;
+using System.Collections.Async;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
@@ -29,14 +32,38 @@ namespace SyncWhole.Google
 			});
 		}
 
-		public Task<ILoadedAppointment> FindAppointmentAsync(string uniqueId)
+		public async Task<ILoadedAppointment> FindAppointmentAsync(string uniqueId)
 		{
-			throw new System.NotImplementedException();
+			return await FindAppointmentInternalAsync(uniqueId);
 		}
 
-		public Task<ILoadedAppointment> CreteAppointmentAsync(IAppointment appointment)
+		public async Task<GoogleCalendarAppointment> FindAppointmentInternalAsync(string uniqueId)
 		{
-			throw new System.NotImplementedException();
+			EventsResource.ListRequest request = _service.Events.List(CalendarId);
+			request.ICalUID = uniqueId;
+			var events = await request.ExecuteAsync().ConfigureAwait(false);
+			// TODO: Repetitions return multiple events
+			return new GoogleCalendarAppointment(events.Items.Single());
+		}
+
+		public async Task<ILoadedAppointment> CreateAppointmentAsync(string uniqueId, IAppointment appointment)
+		{
+			EventsResource.InsertRequest request = _service.Events.Insert(Convert(uniqueId, appointment), CalendarId);
+			Event createdEvent = await request.ExecuteAsync().ConfigureAwait(false);
+			return new GoogleCalendarAppointment(createdEvent);
+		}
+
+		private static Event Convert(string uniqueId, IAppointment appointment)
+		{
+			return new Event
+			{
+				Transparency = appointment.Busy ? "opaque" : "transparent",
+				Summary = appointment.Subject,
+				Location = appointment.Location,
+				ICalUID = uniqueId,
+				Start = new EventDateTime {DateTime = appointment.Schedule.Start},
+				End = new EventDateTime {DateTime = appointment.Schedule.End},
+			};
 		}
 
 		public Task<ILoadedAppointment> UpdateAppointmentAsync(string uniqueId, IAppointment appointment)
@@ -46,7 +73,10 @@ namespace SyncWhole.Google
 
 		public async Task DeleteAppointmentAsync(ILoadedAppointment appointment)
 		{
-			EventsResource.DeleteRequest request = _service.Events.Delete(CalendarId, appointment.UniqueId);
+			var googleAppointment = appointment as GoogleCalendarAppointment
+				?? throw new ArgumentException("Cannot delete appointment from a different calendar");
+
+			EventsResource.DeleteRequest request = _service.Events.Delete(CalendarId, googleAppointment.GoogleCalendarEventId);
 			await request.ExecuteAsync().ConfigureAwait(false);
 		}
 
