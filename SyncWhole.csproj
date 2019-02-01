@@ -48,13 +48,18 @@
     <Compile Include="AppointmentExtensions.cs" />
     <Compile Include="CalendarSynchronizer.cs" />
     <Compile Include="Common\IAppointmentSchedule.cs" />
+    <Compile Include="Common\IRecurrenceSchedule.cs" />
     <Compile Include="Common\LoadedAppointmentIdComparer.cs" />
+    <Compile Include="Common\RecurrenceFrequency.cs" />
+    <Compile Include="Common\WeekDay.cs" />
+    <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Google\AppointmentExtensions.cs" />
     <Compile Include="Google\GoogleCalendarAppointment.cs" />
     <Compile Include="Google\GoogleCalendarAdapter.cs" />
     <Compile Include="Google\GoogleCalendarAdapterFactory.cs" />

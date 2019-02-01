@@ -48,32 +48,19 @@ namespace SyncWhole
 		private async void SyncClick(object sender, EventArgs e)
 		{
 			_btnSync.Enabled = false;
+			_chkForce.Enabled = false;
 			try
 			{
-				await _synchronizer.Synchronize();
+				var statistics = await _synchronizer.Synchronize(_chkForce.Checked);
+				MessageBox.Show(
+					this,
+					$"{statistics.Created} new events created\r\n{statistics.Deleted} old events deleted\r\n{statistics.Updated} events updated",
+					"Synchronization successful");
 			}
 			finally
 			{
 				_btnSync.Enabled = true;
-			}
-		}
-
-		private async void ClearClick(object sender, EventArgs e)
-		{
-			_btnClear.Enabled = false;
-			try
-			{
-				if (MessageBox.Show(this,
-					$"This will delete all appointments from the destination calendar ({_synchronizer.DestinationName}).{Environment.NewLine}Are you sure you want to continue?",
-					"Destructive operation", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
-					MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-				{
-					await _synchronizer.ClearDestination();
-				}
-			}
-			finally
-			{
-				_btnClear.Enabled = true;
+				_chkForce.Enabled = true;
 			}
 		}
 
@@ -225,8 +212,7 @@ namespace SyncWhole
 
 		private void ListBoxSelectionChanged(object sender, EventArgs e)
 		{
-			var apt = listBox1.SelectedItem as ILoadedAppointment;
-			if (apt == null)
+			if (!(listBox1.SelectedItem is ILoadedAppointment apt))
 			{
 				return;
 			}

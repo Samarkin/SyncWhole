@@ -6,6 +6,9 @@ namespace SyncWhole.Common
 	{
 		bool AllDay { get; }
 		DateTime Start { get; }
+		string StartTimeZone { get; }
 		DateTime End { get; }
+		string EndTimeZone { get; }
+		IRecurrenceSchedule Recurrence { get; }
 	}
 }

@@ -11,11 +11,19 @@ namespace SyncWhole
 			sb.AppendLine(appointment.UniqueId);
 			sb.AppendLine();
 			sb.AppendLine(appointment.Busy ? "Busy" : "Free");
+			if (!appointment.Confirmed)
+			{
+				sb.AppendLine("Tentative");
+			}
 			sb.AppendLine(appointment.Subject);
 			sb.AppendLine(appointment.Location);
 
 			sb.AppendLine();
-			if (appointment.Schedule.AllDay && appointment.Schedule.Start.Date.AddDays(1) == appointment.Schedule.End.Date)
+			if (appointment.Schedule == null)
+			{
+				sb.AppendLine("No schedule");
+			}
+			else if (appointment.Schedule.AllDay && appointment.Schedule.Start.Date.AddDays(1) == appointment.Schedule.End.Date)
 			{
 				sb.AppendLine($"{appointment.Schedule.Start.ToShortDateString()}");
 			}
@@ -31,6 +39,13 @@ namespace SyncWhole
 			{
 				sb.AppendLine($"{appointment.Schedule.Start} - {appointment.Schedule.End}");
 			}
+
+			if (appointment.Schedule?.Recurrence != null)
+			{
+				sb.AppendLine();
+				sb.AppendLine($"{appointment.Schedule.Recurrence.Frequency} recurrence!");
+			}
+
 			return sb.ToString();
 		}
 	}

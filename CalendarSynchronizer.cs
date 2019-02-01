@@ -1,4 +1,6 @@
-﻿using System.Collections.Async;
+﻿using System;
+using System.Collections.Async;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SyncWhole.Common;
@@ -10,7 +12,8 @@ namespace SyncWhole
 		private readonly IAppointmentSourceFactory _sourceFactory;
 		private readonly IAppointmentDestinationFactory _destinationFactory;
 
-		public CalendarSynchronizer(IAppointmentSourceFactory sourceFactory, IAppointmentDestinationFactory destinationFactory)
+		public CalendarSynchronizer(IAppointmentSourceFactory sourceFactory,
+			IAppointmentDestinationFactory destinationFactory)
 		{
 			_sourceFactory = sourceFactory;
 			_destinationFactory = destinationFactory;
@@ -19,18 +22,7 @@ namespace SyncWhole
 		public string SourceName => _sourceFactory.ToString();
 		public string DestinationName => _destinationFactory.ToString();
 
-		public async Task ClearDestination()
-		{
-			using (var destination = await _destinationFactory.ConnectDestinationAsync().ConfigureAwait(false))
-			{
-				await destination
-					.LoadAllAppointments()
-					.ForEachAsync(destination.DeleteAppointmentAsync)
-					.ConfigureAwait(false);
-			}
-		}
-
-		public async Task Synchronize()
+		public async Task<Statistics> Synchronize(bool force)
 		{
 			using (var source = await _sourceFactory.ConnectSourceAsync().ConfigureAwait(false))
 			{
@@ -49,20 +41,59 @@ namespace SyncWhole
 
 					var newAppointments = sourceAppointments.Except(destAppointments, LoadedAppointmentIdComparer.Default);
 					var deletedAppointments = destAppointments.Except(sourceAppointments, LoadedAppointmentIdComparer.Default);
+					var modifiedAppointments = sourceAppointments.SmartZip(destAppointments, LoadedAppointmentIdComparer.Default,
+						(src, dest) => new Tuple<ILoadedAppointment, ILoadedAppointment>(src, dest));
+
+					if (!force)
+					{
+						modifiedAppointments = modifiedAppointments.Where(pair => pair.Item1.LastModifiedDateTime > pair.Item2.LastModifiedDateTime);
+					}
+
+					int created = 0, deleted = 0, updated = 0;
 
 					foreach (var appointment in newAppointments)
 					{
-						await destination.CreateAppointmentAsync(appointment.UniqueId, appointment).ConfigureAwait(false);
+						await destination
+							.CreateAppointmentAsync(appointment.UniqueId, appointment)
+							.ConfigureAwait(false);
+						created++;
 					}
 
 					foreach (var appointment in deletedAppointments)
 					{
-						await destination.DeleteAppointmentAsync(appointment).ConfigureAwait(false);
+						await destination
+							.DeleteAppointmentAsync(appointment)
+							.ConfigureAwait(false);
+						deleted++;
 					}
 
-					// TODO: Update modified
+					foreach (var pair in modifiedAppointments)
+					{
+						await destination
+							.UpdateAppointmentAsync(pair.Item2, pair.Item1)
+							.ConfigureAwait(false);
+						updated++;
+					}
+
+					return new Statistics(created, deleted, updated);
 				}
 			}
 		}
+
+		public struct Statistics
+		{
+			public int Created { get; }
+			public int Deleted { get; }
+			public int Updated { get; }
+
+			public Statistics(int created, int deleted, int updated)
+			{
+				Created = created;
+				Deleted = deleted;
+				Updated = updated;
+			}
+
+		}
+
 	}
 }
