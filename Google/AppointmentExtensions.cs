@@ -34,25 +34,45 @@ namespace SyncWhole.Google
 				throw new ArgumentException("Appointment does not contain schedule");
 			}
 
-			return new Event
+			var ev = new Event
 			{
 				Transparency = appointment.Busy ? "opaque" : "transparent",
 				Summary = appointment.Subject,
 				Location = appointment.Location,
 				ICalUID = uniqueId,
 				Status = appointment.Confirmed ? "confirmed" : "tentative",
-				Start = new EventDateTime
+				Reminders = new Event.RemindersData
 				{
-					DateTime = appointment.Schedule.Start,
-					TimeZone = ToGoogleTimezone(appointment.Schedule.StartTimeZone),
-				},
-				End = new EventDateTime
-				{
-					DateTime = appointment.Schedule.End,
-					TimeZone = ToGoogleTimezone(appointment.Schedule.EndTimeZone),
+					UseDefault = false,
 				},
 				Recurrence =  appointment.Schedule.ToRfc5545Rules().ToList(),
 			};
+			if (appointment.Schedule.AllDay)
+			{
+				ev.Start = new EventDateTime
+				{
+					Date = appointment.Schedule.Start.Date.ToString("yyyy-MM-dd"),
+				};
+				ev.End = new EventDateTime
+				{
+					Date = appointment.Schedule.End.Date.ToString("yyyy-MM-dd"),
+				};
+			}
+			else
+			{
+				ev.Start = new EventDateTime
+				{
+					DateTime = appointment.Schedule.Start,
+					TimeZone = ToGoogleTimezone(appointment.Schedule.StartTimeZone),
+				};
+				ev.End = new EventDateTime
+				{
+					DateTime = appointment.Schedule.End,
+					TimeZone = ToGoogleTimezone(appointment.Schedule.EndTimeZone),
+				};
+			}
+
+			return ev;
 		}
 
 		public static IEnumerable<string> ToRfc5545Rules(this IAppointmentSchedule schedule)
