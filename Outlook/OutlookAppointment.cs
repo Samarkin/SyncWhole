@@ -20,7 +20,7 @@ namespace SyncWhole.Outlook
 		public string Subject => _appointment.Subject;
 		public string Location => _appointment.Location;
 		public IAppointmentSchedule Schedule { get; }
-		public string UniqueId => "O" + _appointment.GlobalAppointmentID;
+		public string UniqueId => "OU" + _appointment.GlobalAppointmentID;
 		public DateTime LastModifiedDateTime => _appointment.LastModificationTime;
 
 		public override string ToString() => Subject ?? "<null>";
@@ -94,6 +94,16 @@ namespace SyncWhole.Outlook
 						Until = pattern.PatternEndDate;
 					}
 				}
+
+				var exs = new List<DateTime>();
+				foreach (Microsoft.Office.Interop.Outlook.Exception ex in pattern.Exceptions)
+				{
+					if (ex.Deleted)
+					{
+						exs.Add(ex.OriginalDate);
+					}
+				}
+				Exceptions = exs.ToArray();
 			}
 
 			public RecurrenceFrequency Frequency { get; }
@@ -103,6 +113,7 @@ namespace SyncWhole.Outlook
 			public int? MonthDay { get; }
 			public int? YearMonth { get; }
 			public WeekDay? WeekDay { get; }
+			public DateTime[] Exceptions { get; }
 
 			private static WeekDay ConvertWeekDays(OlDaysOfWeek olDaysOfWeek)
 			{

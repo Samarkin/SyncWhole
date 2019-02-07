@@ -10,16 +10,22 @@ namespace SyncWhole.Google
 {
 	internal static class AppointmentExtensions
 	{
-			private static readonly KeyValuePair<WeekDay, string>[] WeekDayMap =
-			{
-				new KeyValuePair<WeekDay,string>(WeekDay.Sunday, "SU"),
-				new KeyValuePair<WeekDay,string>(WeekDay.Monday, "MO"),
-				new KeyValuePair<WeekDay,string>(WeekDay.Tuesday, "TU"),
-				new KeyValuePair<WeekDay,string>(WeekDay.Wednesday, "WE"),
-				new KeyValuePair<WeekDay,string>(WeekDay.Thursday, "TH"),
-				new KeyValuePair<WeekDay,string>(WeekDay.Friday, "FR"),
-				new KeyValuePair<WeekDay,string>(WeekDay.Saturday, "SA"),
-			};
+		private static readonly KeyValuePair<WeekDay, string>[] WeekDayMap =
+		{
+			new KeyValuePair<WeekDay,string>(WeekDay.Sunday, "SU"),
+			new KeyValuePair<WeekDay,string>(WeekDay.Monday, "MO"),
+			new KeyValuePair<WeekDay,string>(WeekDay.Tuesday, "TU"),
+			new KeyValuePair<WeekDay,string>(WeekDay.Wednesday, "WE"),
+			new KeyValuePair<WeekDay,string>(WeekDay.Thursday, "TH"),
+			new KeyValuePair<WeekDay,string>(WeekDay.Friday, "FR"),
+			new KeyValuePair<WeekDay,string>(WeekDay.Saturday, "SA"),
+		};
+
+		private static readonly Dictionary<string, string> OutlookToGoogleTimeZoneMap = new Dictionary<string, string>
+		{
+			{"(UTC-08:00) Pacific Time (US & Canada)", "America/Los_Angeles"},
+			// TODO: More timezones
+		};
 
 		public static Event ToGoogleEvent(this IAppointment appointment, string uniqueId = null)
 		{
@@ -38,27 +44,28 @@ namespace SyncWhole.Google
 				Start = new EventDateTime
 				{
 					DateTime = appointment.Schedule.Start,
-					TimeZone = appointment.Schedule.StartTimeZone,
+					TimeZone = ToGoogleTimezone(appointment.Schedule.StartTimeZone),
 				},
 				End = new EventDateTime
 				{
 					DateTime = appointment.Schedule.End,
-					TimeZone = appointment.Schedule.EndTimeZone,
+					TimeZone = ToGoogleTimezone(appointment.Schedule.EndTimeZone),
 				},
-				Recurrence =  appointment.Schedule.Recurrence.ToRfc5545RuleList(),
+				Recurrence =  appointment.Schedule.ToRfc5545Rules().ToList(),
 			};
 		}
 
-		public static IList<string> ToRfc5545RuleList(this IRecurrenceSchedule schedule)
+		public static IEnumerable<string> ToRfc5545Rules(this IAppointmentSchedule schedule)
 		{
-			if (schedule == null)
+			var recurrence = schedule.Recurrence;
+			if (recurrence == null)
 			{
-				return null;
+				yield break;
 			}
 
 			var sb = new StringBuilder();
 			sb.Append("RRULE:FREQ=");
-			switch (schedule.Frequency)
+			switch (recurrence.Frequency)
 			{
 				case RecurrenceFrequency.Daily:
 					sb.Append("DAILY");
@@ -73,36 +80,55 @@ namespace SyncWhole.Google
 					sb.Append("YEARLY");
 					break;
 			}
-			if (schedule.Count.HasValue)
+			if (recurrence.Count.HasValue)
 			{
-				sb.Append($";COUNT={schedule.Count.Value}");
+				sb.Append($";COUNT={recurrence.Count.Value}");
 			}
-			if (schedule.Interval.HasValue)
+			if (recurrence.Interval.HasValue)
 			{
-				sb.Append($";INTERVAL={schedule.Interval.Value}");
+				sb.Append($";INTERVAL={recurrence.Interval.Value}");
 			}
-			if (schedule.Until.HasValue)
+			if (recurrence.Until.HasValue)
 			{
-				sb.Append($";UNTIL={schedule.Until.Value.Date:yyyyMMddT000000Z}"); // TODO: is UTC okay?
+				sb.Append($";UNTIL={recurrence.Until.Value.Date:yyyyMMddT000000Z}"); // TODO: is UTC okay?
 			}
-			if (schedule.WeekDay.HasValue)
+			if (recurrence.WeekDay.HasValue)
 			{
-				sb.Append($";BYDAY={ToRfc5545String(schedule.WeekDay.Value)}");
+				sb.Append($";BYDAY={ToRfc5545String(recurrence.WeekDay.Value)}");
 			}
-			if (schedule.YearMonth.HasValue)
+			if (recurrence.YearMonth.HasValue)
 			{
-				sb.Append($";BYMONTH={schedule.YearMonth.Value}");
+				sb.Append($";BYMONTH={recurrence.YearMonth.Value}");
 			}
-			if (schedule.MonthDay.HasValue)
+			if (recurrence.MonthDay.HasValue)
 			{
-				sb.Append($";BYMONTHDAY={schedule.MonthDay.Value}");
+				sb.Append($";BYMONTHDAY={recurrence.MonthDay.Value}");
 			}
-			return new[] {sb.ToString()};
+			if (recurrence.Exceptions != null && recurrence.Exceptions.Length > 0)
+			{
+				string startTime = schedule.Start.ToString("HHmmss");
+				string startTimezone = ToGoogleTimezone(schedule.StartTimeZone);
+				foreach (DateTime exceptionDate in recurrence.Exceptions)
+				{
+					yield return $"EXDATE;TZID={startTimezone}:{exceptionDate:yyyyMMdd}T{startTime}";
+				}
+			}
+
+			yield return sb.ToString();
 		}
 
 		private static string ToRfc5545String(WeekDay weekDay)
 		{
 			return string.Join(",", WeekDayMap.Where(kv => weekDay.HasFlag(kv.Key)).Select(kv => kv.Value));
+		}
+
+		private static string ToGoogleTimezone(string outlookTimezone)
+		{
+			if (!OutlookToGoogleTimeZoneMap.TryGetValue(outlookTimezone, out string timezone))
+			{
+				throw new ArgumentException($"Unknown timezone: \"{outlookTimezone}\"", nameof(outlookTimezone));
+			}
+			return timezone;
 		}
 	}
 }

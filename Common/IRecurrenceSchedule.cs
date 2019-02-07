@@ -11,5 +11,6 @@ namespace SyncWhole.Common
 		int? MonthDay { get; }
 		int? YearMonth { get; }
 		WeekDay? WeekDay { get; }
+		DateTime[] Exceptions { get; }
 	}
 }

@@ -17,7 +17,7 @@ namespace SyncWhole.Common
 
 		public int GetHashCode(ILoadedAppointment obj)
 		{
-			return obj?.UniqueId.GetHashCode() ?? 0;
+			return obj?.UniqueId?.GetHashCode() ?? 0;
 		}
 	}
 }

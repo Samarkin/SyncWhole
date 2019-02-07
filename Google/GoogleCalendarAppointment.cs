@@ -12,12 +12,12 @@ namespace SyncWhole.Google
 		public GoogleCalendarAppointment(Event @event)
 		{
 			_event = @event;
-			Schedule = @event.Start.DateTime.HasValue && @event.End.DateTime.HasValue
+			Schedule = @event.Start?.DateTime != null && @event.End?.DateTime != null
 				? new AppointmentSchedule(@event)
 				: null;
 		}
 
-		public bool Busy => string.Equals(_event.Transparency, "opaque", StringComparison.OrdinalIgnoreCase);
+		public bool Busy => !string.Equals(_event.Transparency, "transparent", StringComparison.OrdinalIgnoreCase);
 		public bool Confirmed => string.Equals(_event.Status, "confirmed", StringComparison.OrdinalIgnoreCase);
 		public string Subject => _event.Summary;
 		public string Location => _event.Location;
