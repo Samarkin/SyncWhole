@@ -79,7 +79,7 @@ namespace SyncWhole
 			foreach (var pair in modifiedAppointments)
 			{
 				await destination
-					.UpdateAppointmentAsync(pair.Destination, pair.Source)
+					.UpdateAppointmentAsync(pair.Destination, pair.Source, force)
 					.ConfigureAwait(false);
 				updated++;
 			}

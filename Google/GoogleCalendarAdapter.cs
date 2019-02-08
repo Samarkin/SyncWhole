@@ -65,14 +65,14 @@ namespace SyncWhole.Google
 				Logger.Info($"Created new event \"{appointmentData}\" on {appointmentData.Schedule?.Start:d}");
 				if (appointmentData.Schedule?.Recurrence?.Exceptions != null)
 				{
-					await UpdateExceptionsAsync(createdEvent.Id, appointmentData.Schedule).ConfigureAwait(false);
+					await UpdateExceptionsAsync(createdEvent.Id, appointmentData.Schedule, true).ConfigureAwait(false);
 				}
 
 				return new GoogleCalendarAppointment(createdEvent);
 			}
 		}
 
-		private async Task UpdateExceptionsAsync(string id, IAppointmentSchedule schedule)
+		private async Task UpdateExceptionsAsync(string id, IAppointmentSchedule schedule, bool force)
 		{
 			var exceptions = schedule.Recurrence.Exceptions.Where(kv => kv.Value != null);
 			foreach (var kv in exceptions)
@@ -93,23 +93,25 @@ namespace SyncWhole.Google
 						continue;
 					}
 
-					// TODO: compare modification time before updating for optimization
-					await UpdateAppointmentAsync(instance.Id, kv.Value).ConfigureAwait(false);
+					if (force || kv.Value.LastModifiedDateTime > (instance.Updated ?? DateTime.MinValue))
+					{
+						await UpdateAppointmentAsync(instance.Id, kv.Value, force).ConfigureAwait(false);
+					}
 				}
 			}
 		}
 
-		public async Task<ILoadedAppointment> UpdateAppointmentAsync(ILoadedAppointment existingAppointment, IAppointment appointmentData)
+		public async Task<ILoadedAppointment> UpdateAppointmentAsync(ILoadedAppointment existingAppointment, IAppointment appointmentData, bool force)
 		{
 			using (Logger.Scope($"GoogleCalendar.UpdateAppointment(\"{existingAppointment}\")"))
 			{
 				var googleAppointment = existingAppointment as GoogleCalendarAppointment
 					?? throw new ArgumentException("Cannot update appointment from a different calendar");
-				return await UpdateAppointmentAsync(googleAppointment.GoogleCalendarEventId, appointmentData).ConfigureAwait(false);
+				return await UpdateAppointmentAsync(googleAppointment.GoogleCalendarEventId, appointmentData, force).ConfigureAwait(false);
 			}
 		}
 
-		private async Task<ILoadedAppointment> UpdateAppointmentAsync(string id, IAppointment appointmentData)
+		private async Task<ILoadedAppointment> UpdateAppointmentAsync(string id, IAppointment appointmentData, bool force)
 		{
 			EventsResource.UpdateRequest request = _service.Events.Update(appointmentData.ToGoogleEvent(), CalendarId, id);
 			Event updatedEvent = await request.ExecuteAsync().ConfigureAwait(false);
@@ -121,7 +123,7 @@ namespace SyncWhole.Google
 			Logger.Info($"Updated {description} \"{appointmentData}\" on {appointmentData.Schedule?.Start:d}");
 			if (appointmentData.Schedule?.Recurrence?.Exceptions != null)
 			{
-				await UpdateExceptionsAsync(updatedEvent.Id, appointmentData.Schedule).ConfigureAwait(false);
+				await UpdateExceptionsAsync(updatedEvent.Id, appointmentData.Schedule, force).ConfigureAwait(false);
 			}
 
 			return new GoogleCalendarAppointment(updatedEvent);
