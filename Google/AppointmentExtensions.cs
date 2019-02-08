@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Google.Apis.Calendar.v3.Data;
 using SyncWhole.Common;
 
@@ -19,12 +18,6 @@ namespace SyncWhole.Google
 			new KeyValuePair<WeekDay,string>(WeekDay.Thursday, "TH"),
 			new KeyValuePair<WeekDay,string>(WeekDay.Friday, "FR"),
 			new KeyValuePair<WeekDay,string>(WeekDay.Saturday, "SA"),
-		};
-
-		private static readonly Dictionary<string, string> OutlookToGoogleTimeZoneMap = new Dictionary<string, string>
-		{
-			{"(UTC-08:00) Pacific Time (US & Canada)", "America/Los_Angeles"},
-			// TODO: More timezones
 		};
 
 		public static Event ToGoogleEvent(this IAppointment appointment, string uniqueId = null)
@@ -63,12 +56,12 @@ namespace SyncWhole.Google
 				ev.Start = new EventDateTime
 				{
 					DateTime = appointment.Schedule.Start,
-					TimeZone = ToGoogleTimezone(appointment.Schedule.StartTimeZone),
+					TimeZone = appointment.Schedule.StartTimeZone,
 				};
 				ev.End = new EventDateTime
 				{
 					DateTime = appointment.Schedule.End,
-					TimeZone = ToGoogleTimezone(appointment.Schedule.EndTimeZone),
+					TimeZone = appointment.Schedule.EndTimeZone,
 				};
 			}
 
@@ -127,7 +120,7 @@ namespace SyncWhole.Google
 			if (recurrence.Exceptions != null && recurrence.Exceptions.Length > 0)
 			{
 				string startTime = schedule.Start.ToString("HHmmss");
-				string startTimezone = ToGoogleTimezone(schedule.StartTimeZone);
+				string startTimezone = schedule.StartTimeZone;
 				foreach (DateTime exceptionDate in recurrence.Exceptions)
 				{
 					yield return $"EXDATE;TZID={startTimezone}:{exceptionDate:yyyyMMdd}T{startTime}";
@@ -140,15 +133,6 @@ namespace SyncWhole.Google
 		private static string ToRfc5545String(WeekDay weekDay)
 		{
 			return string.Join(",", WeekDayMap.Where(kv => weekDay.HasFlag(kv.Key)).Select(kv => kv.Value));
-		}
-
-		private static string ToGoogleTimezone(string outlookTimezone)
-		{
-			if (!OutlookToGoogleTimeZoneMap.TryGetValue(outlookTimezone, out string timezone))
-			{
-				throw new ArgumentException($"Unknown timezone: \"{outlookTimezone}\"", nameof(outlookTimezone));
-			}
-			return timezone;
 		}
 	}
 }

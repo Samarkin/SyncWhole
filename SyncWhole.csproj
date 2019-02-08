@@ -136,6 +136,9 @@
     <PackageReference Include="Google.Apis.Calendar.v3">
       <Version>1.37.0.1475</Version>
     </PackageReference>
+    <PackageReference Include="TimeZoneConverter">
+      <Version>2.5.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Office.Interop.Outlook;
 using SyncWhole.Common;
+using TimeZoneConverter;
 
 namespace SyncWhole.Outlook
 {
@@ -40,9 +41,9 @@ namespace SyncWhole.Outlook
 
 			public bool AllDay => _appointment.AllDayEvent;
 			public DateTime Start => _appointment.StartInStartTimeZone;
-			public string StartTimeZone => _appointment.StartTimeZone.Name;
+			public string StartTimeZone => TZConvert.WindowsToIana(_appointment.StartTimeZone.ID);
 			public DateTime End => _appointment.EndInEndTimeZone;
-			public string EndTimeZone => _appointment.StartTimeZone.Name;
+			public string EndTimeZone => TZConvert.WindowsToIana(_appointment.StartTimeZone.ID);
 			public IRecurrenceSchedule Recurrence { get; }
 		}
 
