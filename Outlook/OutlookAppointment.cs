@@ -47,9 +47,9 @@ namespace SyncWhole.Outlook
 			}
 
 			public bool AllDay => _appointment.AllDayEvent;
-			public DateTime Start => _appointment.StartInStartTimeZone;
+			public DateTime Start => _appointment.Start;
 			public TimeZoneInfo StartTimeZone => TimeZoneInfo.FindSystemTimeZoneById(_appointment.StartTimeZone.ID);
-			public DateTime End => _appointment.EndInEndTimeZone;
+			public DateTime End => _appointment.End;
 			public TimeZoneInfo EndTimeZone => TimeZoneInfo.FindSystemTimeZoneById(_appointment.EndTimeZone.ID);
 			public IRecurrenceSchedule Recurrence { get; }
 		}
