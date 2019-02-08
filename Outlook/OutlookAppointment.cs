@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Office.Interop.Outlook;
 using SyncWhole.Common;
-using TimeZoneConverter;
 
 namespace SyncWhole.Outlook
 {

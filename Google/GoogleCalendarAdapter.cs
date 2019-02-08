@@ -60,7 +60,7 @@ namespace SyncWhole.Google
 
 		private async Task UpdateExceptionsAsync(string id, IAppointmentSchedule schedule)
 		{
-			var exceptions = schedule.Recurrence.Exceptions.Where(kv => kv.Value != null).ToArray();
+			var exceptions = schedule.Recurrence.Exceptions.Where(kv => kv.Value != null);
 			foreach (var kv in exceptions)
 			{
 				EventsResource.InstancesRequest instancesRequest = _service.Events.Instances(CalendarId, id);

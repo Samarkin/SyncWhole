@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Async;
-using System.Collections.Generic;
+﻿using System.Collections.Async;
 using System.Linq;
 using System.Threading.Tasks;
 using SyncWhole.Common;
