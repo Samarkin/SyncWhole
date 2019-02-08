@@ -48,16 +48,6 @@ namespace SyncWhole.Google
 
 		public async Task<ILoadedAppointment> CreateAppointmentAsync(string uniqueId, IAppointment appointmentData)
 		{
-			GoogleCalendarAppointment existingAppointment = await FindAppointmentInternalAsync(uniqueId);
-			if (existingAppointment != null)
-			{
-				if (!existingAppointment.Deleted)
-				{
-					throw new InvalidOperationException("Appointment already exists");
-				}
-				return await UpdateAppointmentAsync(existingAppointment, appointmentData);
-			}
-
 			EventsResource.InsertRequest request = _service.Events.Insert(appointmentData.ToGoogleEvent(uniqueId), CalendarId);
 			Event createdEvent = await request.ExecuteAsync().ConfigureAwait(false);
 			// TODO: Create exceptions
