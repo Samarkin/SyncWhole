@@ -29,7 +29,10 @@ namespace SyncWhole.Google
 					Events events = await request.ExecuteAsync(yield.CancellationToken).ConfigureAwait(false);
 					foreach (Event ev in events.Items)
 					{
-						await yield.ReturnAsync(new GoogleCalendarAppointment(ev)).ConfigureAwait(false);
+						if (ev.RecurringEventId == null)
+						{
+							await yield.ReturnAsync(new GoogleCalendarAppointment(ev)).ConfigureAwait(false);
+						}
 					}
 				});
 			}
