@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Office.Interop.Outlook;
 using SyncWhole.Common;
+using SyncWhole.Logging;
 
 namespace SyncWhole.Outlook
 {
@@ -34,7 +35,14 @@ namespace SyncWhole.Outlook
 				_appointment = appointment;
 				if (appointment.IsRecurring && appointment.RecurrenceState == OlRecurrenceState.olApptMaster)
 				{
-					Recurrence = new AppointmentRecurrence(_appointment.GetRecurrencePattern());
+					try
+					{
+						Recurrence = new AppointmentRecurrence(_appointment.GetRecurrencePattern());
+					}
+					catch (ArgumentOutOfRangeException ex)
+					{
+						Logger.Warning(ex.Message);
+					}
 				}
 			}
 

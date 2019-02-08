@@ -78,7 +78,21 @@ namespace SyncWhole.UI
 
 		public void WriteMessage(Exception exception, string message)
 		{
-			throw new NotImplementedException();
+			if (MaxLevel < LogLevel.Error)
+			{
+				return;
+			}
+
+			DateTime dateTime = DateTime.Now;
+			Dispatch(() => _lstLog.Items.Add(new ListViewItem(new []
+			{
+				string.Empty,
+				dateTime.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
+				$"{message}: {exception.Message}",
+			}, GetImageKey(LogLevel.Error))
+			{
+				ToolTipText = exception.ToString()
+			}));
 		}
 
 		private static string GetImageKey(LogLevel level)

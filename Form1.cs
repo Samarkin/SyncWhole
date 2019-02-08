@@ -57,11 +57,16 @@ namespace SyncWhole
 			_chkForce.Enabled = false;
 			try
 			{
-				var statistics = await _synchronizer.Synchronize(_chkForce.Checked);
+				var statistics = await _synchronizer.SynchronizeAsync(_chkForce.Checked);
+				Logger.Info($"Synchronization successful. {statistics.Created} new events created, {statistics.Deleted} old events deleted, {statistics.Updated} events updated");
 				MessageBox.Show(
 					this,
 					$"{statistics.Created} new events created\r\n{statistics.Deleted} old events deleted\r\n{statistics.Updated} events updated",
 					"Synchronization successful");
+			}
+			catch (Exception ex)
+			{
+				Logger.Error("Synchronization failed", ex);
 			}
 			finally
 			{

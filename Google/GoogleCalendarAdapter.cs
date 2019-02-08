@@ -113,7 +113,12 @@ namespace SyncWhole.Google
 		{
 			EventsResource.UpdateRequest request = _service.Events.Update(appointmentData.ToGoogleEvent(), CalendarId, id);
 			Event updatedEvent = await request.ExecuteAsync().ConfigureAwait(false);
-			Logger.Info($"Updated event \"{appointmentData}\" on {appointmentData.Schedule?.Start:d}");
+			string description = updatedEvent.RecurringEventId != null
+				? "instance of a recurring event"
+				: updatedEvent.Recurrence != null
+					? "recurring event"
+					: "event";
+			Logger.Info($"Updated {description} \"{appointmentData}\" on {appointmentData.Schedule?.Start:d}");
 			if (appointmentData.Schedule?.Recurrence?.Exceptions != null)
 			{
 				await UpdateExceptionsAsync(updatedEvent.Id, appointmentData.Schedule).ConfigureAwait(false);
