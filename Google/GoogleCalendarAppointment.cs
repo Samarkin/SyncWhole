@@ -1,6 +1,7 @@
 ﻿using System;
 using Google.Apis.Calendar.v3.Data;
 using SyncWhole.Common;
+using TimeZoneConverter;
 
 namespace SyncWhole.Google
 {
@@ -45,9 +46,9 @@ namespace SyncWhole.Google
 
 			public bool AllDay { get; }
 			public DateTime Start { get; }
-			public string StartTimeZone => _event.Start.TimeZone;
+			public TimeZoneInfo StartTimeZone => TimeZoneInfo.FindSystemTimeZoneById(TZConvert.IanaToWindows(_event.Start.TimeZone));
 			public DateTime End { get; }
-			public string EndTimeZone => _event.End.TimeZone;
+			public TimeZoneInfo EndTimeZone => TimeZoneInfo.FindSystemTimeZoneById(TZConvert.IanaToWindows(_event.End.TimeZone));
 			public IRecurrenceSchedule Recurrence => null; // TODO
 		}
 	}

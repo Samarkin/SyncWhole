@@ -41,9 +41,9 @@ namespace SyncWhole.Outlook
 
 			public bool AllDay => _appointment.AllDayEvent;
 			public DateTime Start => _appointment.StartInStartTimeZone;
-			public string StartTimeZone => TZConvert.WindowsToIana(_appointment.StartTimeZone.ID);
+			public TimeZoneInfo StartTimeZone => TimeZoneInfo.FindSystemTimeZoneById(_appointment.StartTimeZone.ID);
 			public DateTime End => _appointment.EndInEndTimeZone;
-			public string EndTimeZone => TZConvert.WindowsToIana(_appointment.StartTimeZone.ID);
+			public TimeZoneInfo EndTimeZone => TimeZoneInfo.FindSystemTimeZoneById(_appointment.EndTimeZone.ID);
 			public IRecurrenceSchedule Recurrence { get; }
 		}
 
@@ -97,7 +97,7 @@ namespace SyncWhole.Outlook
 				}
 				if (pattern.Exceptions.Count > 0)
 				{
-					var exs = new Dictionary<DateTime, IAppointment>();
+					var exs = new Dictionary<DateTime, ILoadedAppointment>();
 					foreach (Microsoft.Office.Interop.Outlook.Exception ex in pattern.Exceptions)
 					{
 						exs[ex.OriginalDate] = ex.Deleted ? null : new OutlookAppointment(ex.AppointmentItem);
@@ -113,7 +113,7 @@ namespace SyncWhole.Outlook
 			public int? MonthDay { get; }
 			public int? YearMonth { get; }
 			public WeekDay? WeekDay { get; }
-			public IReadOnlyDictionary<DateTime, IAppointment> Exceptions { get; }
+			public IReadOnlyDictionary<DateTime, ILoadedAppointment> Exceptions { get; }
 
 			private static WeekDay ConvertWeekDays(OlDaysOfWeek olDaysOfWeek)
 			{

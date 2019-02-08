@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Google.Apis.Calendar.v3.Data;
 using SyncWhole.Common;
+using TimeZoneConverter;
 
 namespace SyncWhole.Google
 {
@@ -56,12 +57,12 @@ namespace SyncWhole.Google
 				ev.Start = new EventDateTime
 				{
 					DateTime = appointment.Schedule.Start,
-					TimeZone = appointment.Schedule.StartTimeZone,
+					TimeZone = TZConvert.WindowsToIana(appointment.Schedule.StartTimeZone.Id),
 				};
 				ev.End = new EventDateTime
 				{
 					DateTime = appointment.Schedule.End,
-					TimeZone = appointment.Schedule.EndTimeZone,
+					TimeZone = TZConvert.WindowsToIana(appointment.Schedule.EndTimeZone.Id),
 				};
 			}
 
@@ -120,7 +121,7 @@ namespace SyncWhole.Google
 			if (recurrence.Exceptions != null)
 			{
 				string startTime = schedule.Start.ToString("HHmmss");
-				string startTimezone = schedule.StartTimeZone;
+				string startTimezone = TZConvert.WindowsToIana(schedule.StartTimeZone.Id);
 				foreach (DateTime exceptionDate in recurrence.Exceptions.Where(kv => kv.Value == null).Select(kv => kv.Key))
 				{
 					yield return $"EXDATE;TZID={startTimezone}:{exceptionDate:yyyyMMdd}T{startTime}";

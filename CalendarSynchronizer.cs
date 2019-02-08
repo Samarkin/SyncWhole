@@ -42,11 +42,11 @@ namespace SyncWhole
 					var newAppointments = sourceAppointments.Except(destAppointments, LoadedAppointmentIdComparer.Default);
 					var deletedAppointments = destAppointments.Except(sourceAppointments, LoadedAppointmentIdComparer.Default);
 					var modifiedAppointments = sourceAppointments.SmartZip(destAppointments, LoadedAppointmentIdComparer.Default,
-						(src, dest) => new Tuple<ILoadedAppointment, ILoadedAppointment>(src, dest));
+						(src, dest) => new { Source = src, Destination = dest});
 
 					if (!force)
 					{
-						modifiedAppointments = modifiedAppointments.Where(pair => pair.Item1.LastModifiedDateTime > pair.Item2.LastModifiedDateTime);
+						modifiedAppointments = modifiedAppointments.Where(pair => pair.Source.LastModifiedDateTime > pair.Destination.LastModifiedDateTime);
 					}
 
 					int created = 0, deleted = 0, updated = 0;
@@ -70,7 +70,7 @@ namespace SyncWhole
 					foreach (var pair in modifiedAppointments)
 					{
 						await destination
-							.UpdateAppointmentAsync(pair.Item2, pair.Item1)
+							.UpdateAppointmentAsync(pair.Destination, pair.Source)
 							.ConfigureAwait(false);
 						updated++;
 					}

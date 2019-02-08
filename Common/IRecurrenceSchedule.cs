@@ -12,7 +12,7 @@ namespace SyncWhole.Common
 		int? MonthDay { get; }
 		int? YearMonth { get; }
 		WeekDay? WeekDay { get; }
-		IReadOnlyDictionary<DateTime, IAppointment> Exceptions { get; }
+		IReadOnlyDictionary<DateTime, ILoadedAppointment> Exceptions { get; }
 
 	}
 }
