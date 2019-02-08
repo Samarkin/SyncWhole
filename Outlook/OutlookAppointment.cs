@@ -33,7 +33,7 @@ namespace SyncWhole.Outlook
 			public AppointmentSchedule(AppointmentItem appointment)
 			{
 				_appointment = appointment;
-				if (appointment.IsRecurring)
+				if (appointment.IsRecurring && appointment.RecurrenceState == OlRecurrenceState.olApptMaster)
 				{
 					Recurrence = new AppointmentRecurrence(_appointment.GetRecurrencePattern());
 				}
@@ -95,16 +95,15 @@ namespace SyncWhole.Outlook
 						Until = pattern.PatternEndDate;
 					}
 				}
-
-				var exs = new List<DateTime>();
-				foreach (Microsoft.Office.Interop.Outlook.Exception ex in pattern.Exceptions)
+				if (pattern.Exceptions.Count > 0)
 				{
-					if (ex.Deleted)
+					var exs = new Dictionary<DateTime, IAppointment>();
+					foreach (Microsoft.Office.Interop.Outlook.Exception ex in pattern.Exceptions)
 					{
-						exs.Add(ex.OriginalDate);
+						exs[ex.OriginalDate] = ex.Deleted ? null : new OutlookAppointment(ex.AppointmentItem);
 					}
+					Exceptions = exs;
 				}
-				Exceptions = exs.ToArray();
 			}
 
 			public RecurrenceFrequency Frequency { get; }
@@ -114,7 +113,7 @@ namespace SyncWhole.Outlook
 			public int? MonthDay { get; }
 			public int? YearMonth { get; }
 			public WeekDay? WeekDay { get; }
-			public DateTime[] Exceptions { get; }
+			public IReadOnlyDictionary<DateTime, IAppointment> Exceptions { get; }
 
 			private static WeekDay ConvertWeekDays(OlDaysOfWeek olDaysOfWeek)
 			{

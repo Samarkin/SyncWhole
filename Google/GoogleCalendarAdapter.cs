@@ -60,6 +60,7 @@ namespace SyncWhole.Google
 
 			EventsResource.InsertRequest request = _service.Events.Insert(appointmentData.ToGoogleEvent(uniqueId), CalendarId);
 			Event createdEvent = await request.ExecuteAsync().ConfigureAwait(false);
+			// TODO: Create exceptions
 			return new GoogleCalendarAppointment(createdEvent);
 		}
 
@@ -70,6 +71,7 @@ namespace SyncWhole.Google
 
 			EventsResource.UpdateRequest request = _service.Events.Update(appointmentData.ToGoogleEvent(), CalendarId, googleAppointment.GoogleCalendarEventId);
 			Event updatedEvent = await request.ExecuteAsync().ConfigureAwait(false);
+			// TODO: Update exceptions
 			return new GoogleCalendarAppointment(updatedEvent);
 		}
 

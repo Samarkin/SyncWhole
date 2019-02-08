@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SyncWhole.Common
 {
@@ -11,6 +12,7 @@ namespace SyncWhole.Common
 		int? MonthDay { get; }
 		int? YearMonth { get; }
 		WeekDay? WeekDay { get; }
-		DateTime[] Exceptions { get; }
+		IReadOnlyDictionary<DateTime, IAppointment> Exceptions { get; }
+
 	}
 }

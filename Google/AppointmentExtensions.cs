@@ -117,11 +117,11 @@ namespace SyncWhole.Google
 			{
 				sb.Append($";BYMONTHDAY={recurrence.MonthDay.Value}");
 			}
-			if (recurrence.Exceptions != null && recurrence.Exceptions.Length > 0)
+			if (recurrence.Exceptions != null)
 			{
 				string startTime = schedule.Start.ToString("HHmmss");
 				string startTimezone = schedule.StartTimeZone;
-				foreach (DateTime exceptionDate in recurrence.Exceptions)
+				foreach (DateTime exceptionDate in recurrence.Exceptions.Where(kv => kv.Value == null).Select(kv => kv.Key))
 				{
 					yield return $"EXDATE;TZID={startTimezone}:{exceptionDate:yyyyMMdd}T{startTime}";
 				}
