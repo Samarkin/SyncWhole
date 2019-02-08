@@ -39,7 +39,6 @@ namespace SyncWhole
 		{
 			var sourceAppointments = await source
 				.LoadAllAppointments()
-				.Take(15)
 				.ToArrayAsync()
 				.ConfigureAwait(false);
 
