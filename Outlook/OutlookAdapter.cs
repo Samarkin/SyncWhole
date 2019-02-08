@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Office.Interop.Outlook;
 using SyncWhole.Common;
+using SyncWhole.Logging;
 
 namespace SyncWhole.Outlook
 {
@@ -16,14 +17,17 @@ namespace SyncWhole.Outlook
 
 		public IAsyncEnumerable<ILoadedAppointment> LoadAllAppointments()
 		{
-			return new AsyncEnumerable<ILoadedAppointment>(yield => Task.Run(async () =>
+			using (Logger.Scope($"OutlookCalendar.LoadAllAppointments()"))
 			{
-				foreach (AppointmentItem item in _calendarFolder.Items)
+				return new AsyncEnumerable<ILoadedAppointment>(yield => Task.Run(async () =>
 				{
-					yield.CancellationToken.ThrowIfCancellationRequested();
-					await yield.ReturnAsync(new OutlookAppointment(item)).ConfigureAwait(false);
-				}
-			}));
+					foreach (AppointmentItem item in _calendarFolder.Items)
+					{
+						yield.CancellationToken.ThrowIfCancellationRequested();
+						await yield.ReturnAsync(new OutlookAppointment(item)).ConfigureAwait(false);
+					}
+				}));
+			}
 		}
 
 		public void Dispose()

@@ -6,6 +6,7 @@ using Google.Apis.Calendar.v3;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using SyncWhole.Common;
+using SyncWhole.Logging;
 
 namespace SyncWhole.Google
 {
@@ -25,12 +26,18 @@ namespace SyncWhole.Google
 
 		public async Task<IAppointmentDestination> ConnectDestinationAsync()
 		{
-			return await ConnectAsync();
+			using (Logger.Scope($"GoogleCalendar<{_credentialId}>.ConnectDestination()"))
+			{
+				return await ConnectAsync();
+			}
 		}
 
 		public async Task<IAppointmentSource> ConnectSourceAsync()
 		{
-			return await ConnectAsync();
+			using (Logger.Scope($"GoogleCalendar<{_credentialId}>.ConnectSource()"))
+			{
+				return await ConnectAsync();
+			}
 		}
 
 		private async Task<GoogleCalendarAdapter> ConnectAsync()
@@ -47,6 +54,7 @@ namespace SyncWhole.Google
 					new FileDataStore(_credentialId, true)).ConfigureAwait(false);
 			}
 
+			Logger.Info($"GoogleCalendar<{_credentialId}> successfully authenticated");
 			// Create Google Calendar API service
 			var service = new CalendarService(new BaseClientService.Initializer
 			{

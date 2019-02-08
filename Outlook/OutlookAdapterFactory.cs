@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Office.Interop.Outlook;
 using SyncWhole.Common;
+using SyncWhole.Logging;
 
 namespace SyncWhole.Outlook
 {
@@ -8,9 +9,13 @@ namespace SyncWhole.Outlook
 	{
 		public Task<IAppointmentSource> ConnectSourceAsync()
 		{
-			var app = new Application();
-			var calendar = app.Session.GetDefaultFolder(OlDefaultFolders.olFolderCalendar);
-			return Task.FromResult<IAppointmentSource>(new OutlookAdapter(calendar));
+			using (Logger.Scope($"OutlookCalendar.ConnectSource()"))
+			{
+				var app = new Application();
+				var calendar = app.Session.GetDefaultFolder(OlDefaultFolders.olFolderCalendar);
+				Logger.Info($"OutlookCalendar successfully connected");
+				return Task.FromResult<IAppointmentSource>(new OutlookAdapter(calendar));
+			}
 		}
 
 		public override string ToString() => "Outlook Application";

@@ -34,6 +34,7 @@
 			this._cmbCalendars = new System.Windows.Forms.ComboBox();
 			this._btnSync = new System.Windows.Forms.Button();
 			this._chkForce = new System.Windows.Forms.CheckBox();
+			this.button1 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// _btnLoad
@@ -95,11 +96,22 @@
 			this._chkForce.Text = "Use Force";
 			this._chkForce.UseVisualStyleBackColor = true;
 			// 
+			// button1
+			// 
+			this.button1.Location = new System.Drawing.Point(370, 12);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(75, 23);
+			this.button1.TabIndex = 6;
+			this.button1.Text = "Log";
+			this.button1.UseVisualStyleBackColor = true;
+			this.button1.Click += new System.EventHandler(this.LogClick);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(800, 450);
+			this.Controls.Add(this.button1);
 			this.Controls.Add(this._chkForce);
 			this.Controls.Add(this._btnSync);
 			this.Controls.Add(this._cmbCalendars);
@@ -121,6 +133,7 @@
 		private System.Windows.Forms.ComboBox _cmbCalendars;
 		private System.Windows.Forms.Button _btnSync;
 		private System.Windows.Forms.CheckBox _chkForce;
+		private System.Windows.Forms.Button button1;
 	}
 }
 

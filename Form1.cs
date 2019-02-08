@@ -3,13 +3,16 @@ using System.Collections.Async;
 using System.Windows.Forms;
 using SyncWhole.Common;
 using SyncWhole.Google;
+using SyncWhole.Logging;
 using SyncWhole.Outlook;
+using SyncWhole.UI;
 
 namespace SyncWhole
 {
 	public partial class Form1 : Form
 	{
 		private readonly CalendarSynchronizer _synchronizer;
+		private readonly LogWindow _logWindow;
 
 		public Form1()
 		{
@@ -21,6 +24,9 @@ namespace SyncWhole
 
 			_cmbCalendars.Items.Add(googleFactory);
 			_cmbCalendars.Items.Add(outlookFactory);
+
+			_logWindow = new LogWindow();
+			Logger.Initialize(_logWindow);
 		}
 
 		private async void ButtonClick(object sender, EventArgs e)
@@ -76,6 +82,11 @@ namespace SyncWhole
 
 		private void Form1Closing(object sender, FormClosingEventArgs e)
 		{
+		}
+
+		private void LogClick(object sender, EventArgs e)
+		{
+			_logWindow.Display();
 		}
 	}
 }
