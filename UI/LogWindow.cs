@@ -7,6 +7,7 @@ namespace SyncWhole.UI
 {
 	public partial class LogWindow : FormBase, ILogWriter
 	{
+		private const int MaxItemsInTheList = 10000;
 		private const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
 
 		// TODO: Make configurable through UI
@@ -27,6 +28,18 @@ namespace SyncWhole.UI
 			_lstLog.Items.Clear();
 		}
 
+		private void AddItemToTheList(ListViewItem item)
+		{
+			Dispatch(() =>
+			{
+				if (_lstLog.Items.Count == MaxItemsInTheList)
+				{
+					_lstLog.Items.RemoveAt(0);
+				}
+				_lstLog.Items.Add(item);
+			});
+		}
+
 		public void WriteMessage(LogLevel level, string message)
 		{
 			if (level > MaxLevel)
@@ -35,12 +48,12 @@ namespace SyncWhole.UI
 			}
 
 			DateTime dateTime = DateTime.Now;
-			Dispatch(() => _lstLog.Items.Add(new ListViewItem(new []
+			AddItemToTheList(new ListViewItem(new []
 			{
 				string.Empty,
 				dateTime.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
 				message,
-			}, GetImageKey(level))));
+			}, GetImageKey(level)));
 		}
 
 		public void WriteMessage(Exception exception, string message)
@@ -51,7 +64,7 @@ namespace SyncWhole.UI
 			}
 
 			DateTime dateTime = DateTime.Now;
-			Dispatch(() => _lstLog.Items.Add(new ListViewItem(new []
+			AddItemToTheList(new ListViewItem(new []
 			{
 				string.Empty,
 				dateTime.ToString(DateTimeFormat, CultureInfo.InvariantCulture),
@@ -59,7 +72,7 @@ namespace SyncWhole.UI
 			}, GetImageKey(LogLevel.Error))
 			{
 				ToolTipText = exception.ToString()
-			}));
+			});
 		}
 
 		private static string GetImageKey(LogLevel level)
