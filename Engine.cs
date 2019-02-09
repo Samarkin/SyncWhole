@@ -78,6 +78,7 @@ namespace SyncWhole
 			{
 				if (!Ready)
 				{
+					RewindTimer();
 					return;
 				}
 				NextSync = null;
