@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
@@ -51,7 +52,7 @@ namespace SyncWhole.Google
 					Scopes,
 					"user",
 					CancellationToken.None,
-					new FileDataStore(_credentialId, true)).ConfigureAwait(false);
+					new FileDataStore(Path.Combine(nameof(SyncWhole), _credentialId))).ConfigureAwait(false);
 			}
 
 			Logger.Info($"GoogleCalendar<{_credentialId}> successfully authenticated");
