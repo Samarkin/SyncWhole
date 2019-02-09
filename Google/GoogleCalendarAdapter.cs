@@ -25,15 +25,21 @@ namespace SyncWhole.Google
 			{
 				return new AsyncEnumerable<ILoadedAppointment>(async yield =>
 				{
-					EventsResource.ListRequest request = _service.Events.List(CalendarId);
-					Events events = await request.ExecuteAsync(yield.CancellationToken).ConfigureAwait(false);
-					foreach (Event ev in events.Items)
+					string pageToken = null;
+					do
 					{
-						if (ev.RecurringEventId == null)
+						EventsResource.ListRequest request = _service.Events.List(CalendarId);
+						request.PageToken = pageToken;
+						Events events = await request.ExecuteAsync(yield.CancellationToken).ConfigureAwait(false);
+						pageToken = events.NextPageToken;
+						foreach (Event ev in events.Items)
 						{
-							await yield.ReturnAsync(new GoogleCalendarAppointment(ev)).ConfigureAwait(false);
+							if (ev.RecurringEventId == null)
+							{
+								await yield.ReturnAsync(new GoogleCalendarAppointment(ev)).ConfigureAwait(false);
+							}
 						}
-					}
+					} while (pageToken != null);
 				});
 			}
 		}
