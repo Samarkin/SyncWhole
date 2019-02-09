@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Windows.Forms;
+using SyncWhole.Logging;
+using SyncWhole.UI;
 
 namespace SyncWhole
 {
 	static class Program
 	{
+		public static readonly Engine Engine = new Engine();
+
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
@@ -13,7 +17,13 @@ namespace SyncWhole
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new Form1());
+
+			var logWindow = new LogWindow();
+			Logger.Initialize(logWindow);
+			using (new TrayIcon(logWindow, new SettingsWindow()))
+			{
+				Application.Run();
+			}
 		}
 	}
 }

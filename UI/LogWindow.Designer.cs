@@ -39,9 +39,9 @@
 			this.btnClear = new System.Windows.Forms.Button();
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
 			this.SuspendLayout();
-			// 
+			//
 			// btnExport
-			// 
+			//
 			this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.btnExport.Location = new System.Drawing.Point(93, 266);
 			this.btnExport.Name = "btnExport";
@@ -50,14 +50,14 @@
 			this.btnExport.Text = "Export to file";
 			this.btnExport.UseVisualStyleBackColor = true;
 			this.btnExport.Visible = false;
-			// 
+			//
 			// clmLevel
-			// 
+			//
 			this.clmLevel.Text = "";
 			this.clmLevel.Width = 24;
-			// 
+			//
 			// btnClose
-			// 
+			//
 			this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnClose.Location = new System.Drawing.Point(515, 266);
 			this.btnClose.Name = "btnClose";
@@ -66,21 +66,21 @@
 			this.btnClose.Text = "Close";
 			this.btnClose.UseVisualStyleBackColor = true;
 			this.btnClose.Click += new System.EventHandler(this.CloseClick);
-			// 
+			//
 			// clmMessage
-			// 
+			//
 			this.clmMessage.Text = "Message";
 			this.clmMessage.Width = 395;
-			// 
+			//
 			// clmDateTime
-			// 
+			//
 			this.clmDateTime.Text = "Time";
 			this.clmDateTime.Width = 134;
-			// 
+			//
 			// _lstLog
-			// 
-			this._lstLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+			//
+			this._lstLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
 			this._lstLog.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.clmLevel,
@@ -94,9 +94,9 @@
 			this._lstLog.TabIndex = 0;
 			this._lstLog.UseCompatibleStateImageBehavior = false;
 			this._lstLog.View = System.Windows.Forms.View.Details;
-			// 
+			//
 			// btnClear
-			// 
+			//
 			this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.btnClear.Location = new System.Drawing.Point(12, 266);
 			this.btnClear.Name = "btnClear";
@@ -105,18 +105,18 @@
 			this.btnClear.Text = "Clear";
 			this.btnClear.UseVisualStyleBackColor = true;
 			this.btnClear.Click += new System.EventHandler(this.ClearClick);
-			// 
+			//
 			// imageList1
-			// 
+			//
 			this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
 			this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
 			this.imageList1.Images.SetKeyName(0, "error");
 			this.imageList1.Images.SetKeyName(1, "warning");
 			this.imageList1.Images.SetKeyName(2, "info");
 			this.imageList1.Images.SetKeyName(3, "debug");
-			// 
+			//
 			// LogWindow
-			// 
+			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(602, 301);
@@ -128,7 +128,6 @@
 			this.MinimumSize = new System.Drawing.Size(196, 196);
 			this.Name = "LogWindow";
 			this.Text = "Log";
-			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WindowClosing);
 			this.ResumeLayout(false);
 
 		}

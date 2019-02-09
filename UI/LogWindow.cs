@@ -5,7 +5,7 @@ using SyncWhole.Logging;
 
 namespace SyncWhole.UI
 {
-	public partial class LogWindow : Form, ILogWriter
+	public partial class LogWindow : FormBase, ILogWriter
 	{
 		private const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
 
@@ -15,39 +15,6 @@ namespace SyncWhole.UI
 		public LogWindow()
 		{
 			InitializeComponent();
-		}
-
-		private void Dispatch(Action action)
-		{
-			if (InvokeRequired)
-			{
-				BeginInvoke(action);
-			}
-			else
-			{
-				action.Invoke();
-			}
-		}
-
-		private void WindowClosing(object sender, FormClosingEventArgs e)
-		{
-			if (e.CloseReason == CloseReason.UserClosing)
-			{
-				Hide();
-				e.Cancel = true;
-			}
-		}
-
-		public void Display()
-		{
-			if (!Visible)
-			{
-				Show();
-			}
-			else
-			{
-				Focus();
-			}
 		}
 
 		private void CloseClick(object sender, EventArgs e)
