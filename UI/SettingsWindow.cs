@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using SyncWhole.Google;
-using SyncWhole.Outlook;
+using SyncWhole.Common;
+using SyncWhole.Properties;
 
 namespace SyncWhole.UI
 {
@@ -21,11 +21,13 @@ namespace SyncWhole.UI
 
 		private void OkClick(object sender, EventArgs e)
 		{
+			var interval = TimeSpan.FromMinutes((int)_numTimeout.Value);
 			Program.Engine.SetUpSync(
-				// TODO: Make configurable
-				new OutlookAdapterFactory(),
-				new GoogleCalendarAdapterFactory("token.json"),
-				TimeSpan.FromMinutes((double)_numTimeout.Value));
+				(IAppointmentSourceFactory)_cmbSource.SelectedItem,
+				(IAppointmentDestinationFactory)_cmbDestination.SelectedItem,
+				interval);
+			Settings.Default.SyncInterval = interval;
+			Settings.Default.Save();
 			Close();
 		}
 
@@ -35,6 +37,15 @@ namespace SyncWhole.UI
 			{
 				_btnForce.Enabled = Program.Engine.Ready;
 				Program.Engine.Pause();
+				_cmbSource.Items.Clear();
+				_cmbSource.Items.Add(FactoryStore.CurrentSource);
+				_cmbSource.SelectedIndex = 0;
+				_cmbSource.Enabled = false;
+				_cmbDestination.Items.Clear();
+				_cmbDestination.Items.Add(FactoryStore.CurrentDestination);
+				_cmbDestination.SelectedIndex = 0;
+				_cmbDestination.Enabled = false;
+				_numTimeout.Value = (decimal)Settings.Default.SyncInterval.TotalMinutes;
 			}
 			else
 			{

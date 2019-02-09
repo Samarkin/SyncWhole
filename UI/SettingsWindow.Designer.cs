@@ -31,13 +31,19 @@
 			System.Windows.Forms.Button btnCancel;
 			System.Windows.Forms.Button btnOk;
 			System.Windows.Forms.GroupBox grpSettings;
+			System.Windows.Forms.Label lblDestination;
+			System.Windows.Forms.Label lblSource;
 			System.Windows.Forms.Label lblTimeout;
 			System.Windows.Forms.Label lblNote;
+			this._cmbDestination = new System.Windows.Forms.ComboBox();
+			this._cmbSource = new System.Windows.Forms.ComboBox();
 			this._numTimeout = new System.Windows.Forms.NumericUpDown();
 			this._btnForce = new System.Windows.Forms.Button();
 			btnCancel = new System.Windows.Forms.Button();
 			btnOk = new System.Windows.Forms.Button();
 			grpSettings = new System.Windows.Forms.GroupBox();
+			lblDestination = new System.Windows.Forms.Label();
+			lblSource = new System.Windows.Forms.Label();
 			lblTimeout = new System.Windows.Forms.Label();
 			lblNote = new System.Windows.Forms.Label();
 			grpSettings.SuspendLayout();
@@ -71,6 +77,10 @@
 			grpSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			grpSettings.Controls.Add(lblDestination);
+			grpSettings.Controls.Add(this._cmbDestination);
+			grpSettings.Controls.Add(this._cmbSource);
+			grpSettings.Controls.Add(lblSource);
 			grpSettings.Controls.Add(lblTimeout);
 			grpSettings.Controls.Add(this._numTimeout);
 			grpSettings.Location = new System.Drawing.Point(12, 43);
@@ -80,10 +90,46 @@
 			grpSettings.TabStop = false;
 			grpSettings.Text = "General";
 			// 
+			// lblDestination
+			// 
+			lblDestination.AutoSize = true;
+			lblDestination.Location = new System.Drawing.Point(6, 49);
+			lblDestination.Name = "lblDestination";
+			lblDestination.Size = new System.Drawing.Size(63, 13);
+			lblDestination.TabIndex = 8;
+			lblDestination.Text = "Destination:";
+			// 
+			// _cmbDestination
+			// 
+			this._cmbDestination.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this._cmbDestination.FormattingEnabled = true;
+			this._cmbDestination.Location = new System.Drawing.Point(139, 46);
+			this._cmbDestination.Name = "_cmbDestination";
+			this._cmbDestination.Size = new System.Drawing.Size(156, 21);
+			this._cmbDestination.TabIndex = 7;
+			// 
+			// _cmbSource
+			// 
+			this._cmbSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this._cmbSource.FormattingEnabled = true;
+			this._cmbSource.Location = new System.Drawing.Point(139, 19);
+			this._cmbSource.Name = "_cmbSource";
+			this._cmbSource.Size = new System.Drawing.Size(156, 21);
+			this._cmbSource.TabIndex = 6;
+			// 
+			// lblSource
+			// 
+			lblSource.AutoSize = true;
+			lblSource.Location = new System.Drawing.Point(6, 22);
+			lblSource.Name = "lblSource";
+			lblSource.Size = new System.Drawing.Size(44, 13);
+			lblSource.TabIndex = 5;
+			lblSource.Text = "Source:";
+			// 
 			// lblTimeout
 			// 
 			lblTimeout.AutoSize = true;
-			lblTimeout.Location = new System.Drawing.Point(6, 21);
+			lblTimeout.Location = new System.Drawing.Point(6, 75);
 			lblTimeout.Name = "lblTimeout";
 			lblTimeout.Size = new System.Drawing.Size(127, 13);
 			lblTimeout.TabIndex = 4;
@@ -93,7 +139,7 @@
 			// 
 			this._numTimeout.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this._numTimeout.Location = new System.Drawing.Point(139, 19);
+			this._numTimeout.Location = new System.Drawing.Point(139, 73);
 			this._numTimeout.Maximum = new decimal(new int[] {
             1440,
             0,
@@ -161,5 +207,7 @@
 
 		private System.Windows.Forms.NumericUpDown _numTimeout;
 		private System.Windows.Forms.Button _btnForce;
+		private System.Windows.Forms.ComboBox _cmbDestination;
+		private System.Windows.Forms.ComboBox _cmbSource;
 	}
 }

@@ -39,6 +39,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FactoryStore.cs" />
     <Compile Include="AppointmentExtensions.cs" />
     <Compile Include="CalendarSynchronizer.cs" />
     <Compile Include="Common\IAppointmentSchedule.cs" />

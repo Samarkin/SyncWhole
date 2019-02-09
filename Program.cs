@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using SyncWhole.Logging;
+using SyncWhole.Properties;
 using SyncWhole.UI;
 
 namespace SyncWhole
@@ -20,8 +22,14 @@ namespace SyncWhole
 
 			var logWindow = new LogWindow();
 			Logger.Initialize(logWindow);
+			Engine.SetUpSync(
+				FactoryStore.CurrentSource,
+				FactoryStore.CurrentDestination,
+				Settings.Default.SyncInterval);
 			using (new TrayIcon(logWindow, new SettingsWindow()))
 			{
+				Engine.Resume();
+				Task _ = Engine.SyncAsync(false);
 				Application.Run();
 			}
 		}
