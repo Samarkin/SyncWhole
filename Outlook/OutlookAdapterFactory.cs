@@ -13,7 +13,6 @@ namespace SyncWhole.Outlook
 			{
 				var app = new Application();
 				var calendar = app.Session.GetDefaultFolder(OlDefaultFolders.olFolderCalendar);
-				Logger.Info($"OutlookCalendar successfully connected");
 				return Task.FromResult<IAppointmentSource>(new OutlookAdapter(calendar));
 			}
 		}

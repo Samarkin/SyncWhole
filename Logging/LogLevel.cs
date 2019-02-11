@@ -6,6 +6,7 @@
 		Error,
 		Warning,
 		Info,
+		Verbose,
 		Debug,
 		All,
 	}

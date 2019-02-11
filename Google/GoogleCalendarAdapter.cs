@@ -17,6 +17,7 @@ namespace SyncWhole.Google
 		public GoogleCalendarAdapter(CalendarService service)
 		{
 			_service = service;
+			Logger.Verbose($"Google Calendar successfully connected");
 		}
 
 		public IAsyncEnumerable<ILoadedAppointment> LoadAllAppointments()
@@ -68,7 +69,7 @@ namespace SyncWhole.Google
 			{
 				EventsResource.InsertRequest request = _service.Events.Insert(appointmentData.ToGoogleEvent(uniqueId), CalendarId);
 				Event createdEvent = await request.ExecuteAsync().ConfigureAwait(false);
-				Logger.Info($"Created new event \"{appointmentData}\" on {appointmentData.Schedule?.Start:d}");
+				Logger.Verbose($"Created new event \"{appointmentData}\" on {appointmentData.Schedule?.Start:d}");
 				if (appointmentData.Schedule?.Recurrence?.Exceptions != null)
 				{
 					await UpdateExceptionsAsync(createdEvent.Id, appointmentData.Schedule, true).ConfigureAwait(false);
@@ -126,7 +127,7 @@ namespace SyncWhole.Google
 				: updatedEvent.Recurrence != null
 					? "recurring event"
 					: "event";
-			Logger.Info($"Updated {description} \"{appointmentData}\" on {appointmentData.Schedule?.Start:d}");
+			Logger.Verbose($"Updated {description} \"{appointmentData}\" on {appointmentData.Schedule?.Start:d}");
 			if (appointmentData.Schedule?.Recurrence?.Exceptions != null)
 			{
 				await UpdateExceptionsAsync(updatedEvent.Id, appointmentData.Schedule, force).ConfigureAwait(false);
@@ -144,7 +145,7 @@ namespace SyncWhole.Google
 
 				EventsResource.DeleteRequest request = _service.Events.Delete(CalendarId, googleAppointment.GoogleCalendarEventId);
 				await request.ExecuteAsync().ConfigureAwait(false);
-				Logger.Info($"Deleted event \"{appointment}\" on {appointment.Schedule?.Start:d}");
+				Logger.Verbose($"Deleted event \"{appointment}\" on {appointment.Schedule?.Start:d}");
 			}
 		}
 
@@ -153,6 +154,7 @@ namespace SyncWhole.Google
 			using (Logger.Scope($"GoogleCalendar.Dispose()"))
 			{
 				_service.Dispose();
+				Logger.Verbose($"Google Calendar disconnected");
 			}
 		}
 	}

@@ -55,7 +55,7 @@ namespace SyncWhole.Google
 					new FileDataStore(Path.Combine(nameof(SyncWhole), _credentialId))).ConfigureAwait(false);
 			}
 
-			Logger.Info($"GoogleCalendar<{_credentialId}> successfully authenticated");
+			Logger.Verbose($"Google API <{_credentialId}> successfully authenticated");
 			// Create Google Calendar API service
 			var service = new CalendarService(new BaseClientService.Initializer
 			{

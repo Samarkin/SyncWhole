@@ -45,7 +45,7 @@ namespace SyncWhole
 			{
 				_paused = true;
 				RewindTimer();
-				Logger.Info("Synchronization paused");
+				Logger.Verbose("Synchronization paused");
 			}
 		}
 
@@ -61,7 +61,7 @@ namespace SyncWhole
 				if (Ready)
 				{
 					RewindTimer();
-					Logger.Info("Synchronization resumed");
+					Logger.Verbose("Synchronization resumed");
 				}
 			}
 		}
@@ -100,12 +100,13 @@ namespace SyncWhole
 			try
 			{
 				SyncInProcess = true;
+				Logger.Info($"Synchronization started...");
 				var statistics = await _synchronizer.SynchronizeAsync(force).ConfigureAwait(false);
 				Logger.Info($"Synchronization successful. {statistics.Created} new events created, {statistics.Deleted} old events deleted, {statistics.Updated} events updated");
 			}
 			catch (Exception ex)
 			{
-				Logger.Error("Synchronization failed", ex);
+				Logger.Exception("Synchronization failed", ex);
 			}
 			finally
 			{

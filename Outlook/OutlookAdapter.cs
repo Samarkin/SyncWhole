@@ -13,6 +13,7 @@ namespace SyncWhole.Outlook
 		public OutlookAdapter(MAPIFolder calendarFolder)
 		{
 			_calendarFolder = calendarFolder;
+			Logger.Verbose($"Outlook calendar successfully connected");
 		}
 
 		public IAsyncEnumerable<ILoadedAppointment> LoadAllAppointments()
@@ -32,6 +33,7 @@ namespace SyncWhole.Outlook
 
 		public void Dispose()
 		{
+			Logger.Verbose($"Outlook calendar disconnected");
 		}
 	}
 }
