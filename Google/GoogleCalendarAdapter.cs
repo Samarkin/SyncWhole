@@ -67,7 +67,7 @@ namespace SyncWhole.Google
 		{
 			using (Logger.Scope($"GoogleCalendar.CreateAppointment(\"{appointmentData}\")"))
 			{
-				EventsResource.InsertRequest request = _service.Events.Insert(appointmentData.ToGoogleEvent(uniqueId), CalendarId);
+				EventsResource.InsertRequest request = _service.Events.Insert(appointmentData.ToGoogleEvent(null, uniqueId), CalendarId);
 				Event createdEvent = await request.ExecuteAsync().ConfigureAwait(false);
 				Logger.Verbose($"Created new event \"{appointmentData}\" on {appointmentData.Schedule?.Start:d}");
 				if (appointmentData.Schedule?.Recurrence?.Exceptions != null)
@@ -102,7 +102,7 @@ namespace SyncWhole.Google
 
 					if (force || kv.Value.LastModifiedDateTime > (instance.Updated ?? DateTime.MinValue))
 					{
-						await UpdateAppointmentAsync(instance.Id, kv.Value, force).ConfigureAwait(false);
+						await UpdateAppointmentAsync(instance.Id, instance.Sequence, kv.Value, force).ConfigureAwait(false);
 					}
 				}
 			}
@@ -114,13 +114,13 @@ namespace SyncWhole.Google
 			{
 				var googleAppointment = existingAppointment as GoogleCalendarAppointment
 					?? throw new ArgumentException("Cannot update appointment from a different calendar");
-				return await UpdateAppointmentAsync(googleAppointment.GoogleCalendarEventId, appointmentData, force).ConfigureAwait(false);
+				return await UpdateAppointmentAsync(googleAppointment.GoogleCalendarEventId, googleAppointment.Sequence, appointmentData, force).ConfigureAwait(false);
 			}
 		}
 
-		private async Task<ILoadedAppointment> UpdateAppointmentAsync(string id, IAppointment appointmentData, bool force)
+		private async Task<ILoadedAppointment> UpdateAppointmentAsync(string id, int? sequence, IAppointment appointmentData, bool force)
 		{
-			EventsResource.UpdateRequest request = _service.Events.Update(appointmentData.ToGoogleEvent(), CalendarId, id);
+			EventsResource.UpdateRequest request = _service.Events.Update(appointmentData.ToGoogleEvent(sequence + 1), CalendarId, id);
 			Event updatedEvent = await request.ExecuteAsync().ConfigureAwait(false);
 			string description = updatedEvent.RecurringEventId != null
 				? "instance of a recurring event"

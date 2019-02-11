@@ -26,6 +26,7 @@ namespace SyncWhole.Google
 		public DateTime LastModifiedDateTime => _event.Updated.GetValueOrDefault(DateTime.MinValue);
 
 		public string GoogleCalendarEventId => _event.Id;
+		public int? Sequence => _event.Sequence;
 		public bool Deleted => string.Equals(_event.Status, "cancelled", StringComparison.OrdinalIgnoreCase);
 
 		public override string ToString() => Subject ?? "<null>";

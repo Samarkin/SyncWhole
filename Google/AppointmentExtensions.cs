@@ -21,7 +21,7 @@ namespace SyncWhole.Google
 			new KeyValuePair<WeekDay,string>(WeekDay.Saturday, "SA"),
 		};
 
-		public static Event ToGoogleEvent(this IAppointment appointment, string uniqueId = null)
+		public static Event ToGoogleEvent(this IAppointment appointment, int? sequence = null, string uniqueId = null)
 		{
 			if (appointment.Schedule == null)
 			{
@@ -34,6 +34,7 @@ namespace SyncWhole.Google
 				Summary = appointment.Subject,
 				Location = appointment.Location,
 				ICalUID = uniqueId,
+				Sequence = sequence,
 				Status = appointment.Confirmed ? "confirmed" : "tentative",
 				Reminders = new Event.RemindersData
 				{
