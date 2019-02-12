@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using SyncWhole.Common;
+using SyncWhole.Logging;
 using SyncWhole.Properties;
 
 namespace SyncWhole.UI
@@ -12,6 +13,12 @@ namespace SyncWhole.UI
 		public SettingsWindow()
 		{
 			InitializeComponent();
+
+			var allLevels = Enum.GetValues(typeof(LogLevel));
+			foreach (LogLevel level in allLevels)
+			{
+				_cmbLogLevel.Items.Add(level);
+			}
 		}
 
 		private void CancelClick(object sender, EventArgs e)
@@ -27,6 +34,7 @@ namespace SyncWhole.UI
 				(IAppointmentDestinationFactory)_cmbDestination.SelectedItem,
 				interval);
 			Settings.Default.SyncInterval = interval;
+			Settings.Default.LogLevel = (LogLevel)_cmbLogLevel.SelectedItem;
 			Settings.Default.Save();
 			Close();
 		}
@@ -46,6 +54,7 @@ namespace SyncWhole.UI
 				_cmbDestination.SelectedIndex = 0;
 				_cmbDestination.Enabled = false;
 				_numTimeout.Value = (decimal)Settings.Default.SyncInterval.TotalMinutes;
+				_cmbLogLevel.SelectedItem = Settings.Default.LogLevel;
 			}
 			else
 			{

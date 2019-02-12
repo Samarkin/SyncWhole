@@ -35,10 +35,13 @@
 			System.Windows.Forms.Label lblSource;
 			System.Windows.Forms.Label lblTimeout;
 			System.Windows.Forms.Label lblNote;
+			System.Windows.Forms.GroupBox grpLogging;
+			System.Windows.Forms.Label lblLogLevel;
 			this._cmbDestination = new System.Windows.Forms.ComboBox();
 			this._cmbSource = new System.Windows.Forms.ComboBox();
 			this._numTimeout = new System.Windows.Forms.NumericUpDown();
 			this._btnForce = new System.Windows.Forms.Button();
+			this._cmbLogLevel = new System.Windows.Forms.ComboBox();
 			btnCancel = new System.Windows.Forms.Button();
 			btnOk = new System.Windows.Forms.Button();
 			grpSettings = new System.Windows.Forms.GroupBox();
@@ -46,8 +49,11 @@
 			lblSource = new System.Windows.Forms.Label();
 			lblTimeout = new System.Windows.Forms.Label();
 			lblNote = new System.Windows.Forms.Label();
+			grpLogging = new System.Windows.Forms.GroupBox();
+			lblLogLevel = new System.Windows.Forms.Label();
 			grpSettings.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._numTimeout)).BeginInit();
+			grpLogging.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// btnCancel
@@ -85,7 +91,7 @@
 			grpSettings.Controls.Add(this._numTimeout);
 			grpSettings.Location = new System.Drawing.Point(12, 43);
 			grpSettings.Name = "grpSettings";
-			grpSettings.Size = new System.Drawing.Size(301, 248);
+			grpSettings.Size = new System.Drawing.Size(301, 156);
 			grpSettings.TabIndex = 3;
 			grpSettings.TabStop = false;
 			grpSettings.Text = "General";
@@ -182,11 +188,41 @@
 			this._btnForce.UseVisualStyleBackColor = true;
 			this._btnForce.Click += new System.EventHandler(this.ForceClick);
 			// 
+			// grpLogging
+			// 
+			grpLogging.Controls.Add(lblLogLevel);
+			grpLogging.Controls.Add(this._cmbLogLevel);
+			grpLogging.Location = new System.Drawing.Point(12, 205);
+			grpLogging.Name = "grpLogging";
+			grpLogging.Size = new System.Drawing.Size(301, 86);
+			grpLogging.TabIndex = 10;
+			grpLogging.TabStop = false;
+			grpLogging.Text = "Logging";
+			// 
+			// _cmbLogLevel
+			// 
+			this._cmbLogLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this._cmbLogLevel.FormattingEnabled = true;
+			this._cmbLogLevel.Location = new System.Drawing.Point(139, 19);
+			this._cmbLogLevel.Name = "_cmbLogLevel";
+			this._cmbLogLevel.Size = new System.Drawing.Size(156, 21);
+			this._cmbLogLevel.TabIndex = 10;
+			// 
+			// lblLogLevel
+			// 
+			lblLogLevel.AutoSize = true;
+			lblLogLevel.Location = new System.Drawing.Point(6, 22);
+			lblLogLevel.Name = "lblLogLevel";
+			lblLogLevel.Size = new System.Drawing.Size(55, 13);
+			lblLogLevel.TabIndex = 11;
+			lblLogLevel.Text = "Max level:";
+			// 
 			// SettingsWindow
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(325, 332);
+			this.Controls.Add(grpLogging);
 			this.Controls.Add(this._btnForce);
 			this.Controls.Add(lblNote);
 			this.Controls.Add(grpSettings);
@@ -199,6 +235,8 @@
 			grpSettings.ResumeLayout(false);
 			grpSettings.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this._numTimeout)).EndInit();
+			grpLogging.ResumeLayout(false);
+			grpLogging.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -209,5 +247,6 @@
 		private System.Windows.Forms.Button _btnForce;
 		private System.Windows.Forms.ComboBox _cmbDestination;
 		private System.Windows.Forms.ComboBox _cmbSource;
+		private System.Windows.Forms.ComboBox _cmbLogLevel;
 	}
 }

@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows.Forms;
 using SyncWhole.Logging;
+using SyncWhole.Properties;
 
 namespace SyncWhole.UI
 {
@@ -10,8 +11,7 @@ namespace SyncWhole.UI
 		private const int MaxItemsInTheList = 10000;
 		private const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
 
-		// TODO: Make configurable through UI
-		public LogLevel MaxLevel => LogLevel.Info;
+		public LogLevel MaxLevel => Settings.Default.LogLevel;
 
 		public LogWindow()
 		{
@@ -85,8 +85,8 @@ namespace SyncWhole.UI
 					return "warning";
 				case LogLevel.Info:
 					return "info";
-				case LogLevel.Debug:
-					return "debug";
+				case LogLevel.Verbose:
+					return "verbose";
 				default:
 					return string.Empty;
 			}

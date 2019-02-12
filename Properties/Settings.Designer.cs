@@ -58,5 +58,17 @@ namespace SyncWhole.Properties {
                 this["SyncInterval"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Info")]
+        public global::SyncWhole.Logging.LogLevel LogLevel {
+            get {
+                return ((global::SyncWhole.Logging.LogLevel)(this["LogLevel"]));
+            }
+            set {
+                this["LogLevel"] = value;
+            }
+        }
     }
 }

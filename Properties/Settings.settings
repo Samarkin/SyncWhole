@@ -11,5 +11,8 @@
     <Setting Name="SyncInterval" Type="System.TimeSpan" Scope="User">
       <Value Profile="(Default)">00:15:00</Value>
     </Setting>
+    <Setting Name="LogLevel" Type="SyncWhole.Logging.LogLevel" Scope="User">
+      <Value Profile="(Default)">Info</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
